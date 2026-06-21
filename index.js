@@ -20,8 +20,10 @@ res.send(books);
 
 //Get a single book /api/book/id
 app.get('/api/books/:id', (req, res) =>{
-     res.send(req.params.id);
-
+   const book =  books.find(b => b.id === parseInt(req.params.id));
+   //404 
+   if(!book) res.status(404).send('The book with the given ID was not found.');
+   res.send(book)
 });
 
 
