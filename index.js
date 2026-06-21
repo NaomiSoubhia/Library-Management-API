@@ -1,5 +1,7 @@
 const express = require('express'); 
+const { v4: uuidv4 } = require('uuid');
 const app = express();
+
 
 const Joi = require('joi');
 
@@ -8,9 +10,9 @@ console.log('Joi loaded successfully');
 app.use(express.json());
 
 const books = [
-  { id: 1, name: 'book1' },
-  { id: 2, name: 'book2' },
-  { id: 3, name: 'book3' },
+  { id: uuidv4(), name: 'book1' },
+  { id: uuidv4(), name: 'book2' },
+  { id: uuidv4(), name: 'book3' },
 ];
 
 app.get('/', (req, res)=> {
@@ -26,10 +28,13 @@ res.send(books);
 
 //Get a single book /api/book/id
 app.get('/api/books/:id', (req, res) =>{
-   const book =  books.find(b => b.id === parseInt(req.params.id));
-   //404 
-   if(!book) res.status(404).send('The book with the given ID was not found.');
-   res.send(book);
+   const book = books.find(b => b.id === req.params.id);
+      //404 
+    if (!book) {
+        return res.status(404).send('The book with the given ID was not found.');
+    }
+
+res.send(book);
 });
 
 //POST
@@ -37,11 +42,11 @@ app.post('/api/books', (req, res) => {
  const result = validateBook(req.body);
 
     if (result.error) {
-        return res.status(400).send(error.details[0].message);
+        return res.status(400).send(result.error.details[0].message);
     }
 
     const book = {
-        id: books.length + 1,
+        id: uuidv4(),
         name: req.body.name
     };
 
@@ -54,15 +59,19 @@ app.put('/api/books/:id', (req,res) => {
 
     //Look up to the books
     //If not existing, return 404
-   const book =  books.find(b => b.id === parseInt(req.params.id));
+   const book = books.find(b => b.id === req.params.id);
+   
    //404 
-   if(!book) res.status(404).send('The book with the given ID was not found.');
+   if (!book) {
+    return res.status(404).send('The book with the given ID was not found.');
+}
+
     //Validate 
     //If invalid - return 400 - bad request
     const result = validateBook(req.body);
 
        if (result.error) {
-        return res.status(400).send(error.details[0].message);
+        return res.status(400).send(result.error.details[0].message);
     }
 
     //Update book
@@ -77,8 +86,8 @@ app.put('/api/books/:id', (req,res) => {
 app.delete('/api/books/:id', (req, res)=>{
 
     //Look up the book
-    const book =  books.find(b => b.id === parseInt(req.params.id));
-   //Not existing, return 404
+    const book = books.find(b => b.id === req.params.id);
+    //Not existing, return 404
  
    if(!book){
     return res.status(404).send('The book with the given ID was not found.');
@@ -95,11 +104,11 @@ app.delete('/api/books/:id', (req, res)=>{
 
 
 function validateBook(book){
- const schema = Joi.object({
+    const schema = Joi.object({
         name: Joi.string().min(3).required()
     });
 
-    return { error } = schema.validate(book);
+    return schema.validate(book);
 }
 
 
