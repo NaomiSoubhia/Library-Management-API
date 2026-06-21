@@ -34,13 +34,9 @@ app.get('/api/books/:id', (req, res) =>{
 
 //POST
 app.post('/api/books', (req, res) => {
-    const schema = Joi.object({
-        name: Joi.string().min(3).required()
-    });
+ const result = validateBook(req.body);
 
-    const { error } = schema.validate(req.body);
-
-    if (error) {
+    if (result.error) {
         return res.status(400).send(error.details[0].message);
     }
 
@@ -61,17 +57,11 @@ app.put('/api/books/:id', (req,res) => {
    const book =  books.find(b => b.id === parseInt(req.params.id));
    //404 
    if(!book) res.status(404).send('The book with the given ID was not found.');
-   res.send(book);
-
     //Validate 
     //If invalid - return 400 - bad request
-    const schema = Joi.object({
-        name: Joi.string().min(3).required()
-    });
+    const result = validateBook(req.body);
 
-    const { error } = schema.validate(req.body);
-
-    if (error) {
+       if (result.error) {
         return res.status(400).send(error.details[0].message);
     }
 
@@ -81,6 +71,16 @@ app.put('/api/books/:id', (req,res) => {
     res.send(book)
 
 });
+
+function validateBook(book){
+ const schema = Joi.object({
+        name: Joi.string().min(3).required()
+    });
+
+    return { error } = schema.validate(book);
+
+
+}
 
 
 //PORT enviroment variable 
