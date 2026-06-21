@@ -1,6 +1,8 @@
 const express = require('express'); 
 const app = express();
 
+app.use(express.json());
+
 const books = [
   { id: 1, name: 'book1' },
   { id: 2, name: 'book2' },
@@ -23,7 +25,18 @@ app.get('/api/books/:id', (req, res) =>{
    const book =  books.find(b => b.id === parseInt(req.params.id));
    //404 
    if(!book) res.status(404).send('The book with the given ID was not found.');
-   res.send(book)
+   res.send(book);
+});
+
+//POST
+app.post('/api/books', (req,res) =>{
+ const book = {
+    id: books.length + 1,
+    name: req.body.name
+ };
+
+ books.push(book);
+ res.send(book);
 });
 
 
