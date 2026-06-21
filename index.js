@@ -1,15 +1,29 @@
 const express = require('express'); 
 const app = express();
 
+const books = [
+  { id: 1, name: 'book1' },
+  { id: 2, name: 'book2' },
+  { id: 3, name: 'book3' },
+];
+
 app.get('/', (req, res)=> {
 
     res.send('Hello World!!!');
 
 });
 
-app.get('/api/book', (req,res) =>{
-res.send([1,2,3]);
+//Get all books
+app.get('/api/books', (req,res) =>{
+res.send(books);
 });
+
+//Get a single book /api/book/id
+app.get('/api/books/:id', (req, res) =>{
+     res.send(req.params.id);
+
+});
+
 
 //PORT enviroment variable 
 //process global object that has properties
