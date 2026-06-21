@@ -72,15 +72,36 @@ app.put('/api/books/:id', (req,res) => {
 
 });
 
+
+// Delete 
+app.delete('/api/books/:id', (req, res)=>{
+
+    //Look up the book
+    const book =  books.find(b => b.id === parseInt(req.params.id));
+   //Not existing, return 404
+ 
+   if(!book){
+    return res.status(404).send('The book with the given ID was not found.');
+ 
+   }
+     
+   //Delete
+   const index = books.indexOf(book);
+    books.splice(index,1);
+   //Return deleted book
+    res.send(book);
+
+});
+
+
 function validateBook(book){
  const schema = Joi.object({
         name: Joi.string().min(3).required()
     });
 
     return { error } = schema.validate(book);
-
-
 }
+
 
 
 //PORT enviroment variable 
